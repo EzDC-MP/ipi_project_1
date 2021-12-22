@@ -111,7 +111,12 @@ void debug_print_tab(int n_state, char **action_matrix, char *reduce_n, char *re
     fflush(stream);
 }
 
-int main(int argc, char **argv) {
+action action_func(char state, char letter, char **action_matrix){
+    return action_matrix[(int) state][(int) letter];
+}
+
+
+int main_debug() {
    /*Look for valid input*/
    if (argc != 2) {
        fprintf(stderr, "%s : Error : expected 1 arguments, got %i.\n", argv[0], (argc-1));
@@ -152,4 +157,8 @@ int main(int argc, char **argv) {
     unpack(argv[1], &n_state, &action_matrix, &reduce_n, &reduce_state, &shift_matrix, &link_matrix);
     debug_print_tab(n_state, action_matrix, reduce_n, reduce_state, shift_matrix, link_matrix, f2);
     return 0;
+}
+
+in main(int argc, char **argv){
+    
 }
