@@ -6,3 +6,7 @@ J'ai table de jdr donc je dois y aller, tchuss
 J'ai avancé sur le projet, ma fonction unpack est à moitié finie. On verra pour débug après.
 Bisou.
 PS : le theme 'fino' de oh-my-zsh est pas mal du tout.
+--2021-12-23 19:15:30
+Une version qui compile qui est fini \o/ Manque plus qu'à nettoyer le code
+et finir de bien commenter le tout.
+Puis les pdfs...
