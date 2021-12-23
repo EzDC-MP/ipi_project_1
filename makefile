@@ -15,3 +15,6 @@ source.o: source.c stack.h
 
 exec: $(OBJ)
 	$(CC) $(FLAGS) -o $@ $^
+
+exec_d: $(OBJ)
+	$(CC) $(FLAGS) -g -o $@ $^
