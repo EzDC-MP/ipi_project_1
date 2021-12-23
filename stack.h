@@ -22,3 +22,8 @@ void push_stack(char c, stack *s);
     assigns : *s;
     ensures : pop last element ontop of stack *s;*/
 char pop_stack(stack *s);
+
+/*  requires: s not NULL;
+    assigns : nothing;
+    ensures : returns the top value of the stack without popping it out;*/
+char peek_stack(stack s);

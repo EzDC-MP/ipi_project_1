@@ -30,6 +30,10 @@ char pop_stack(stack *s){
     return e;
 }
 
+char peek_stack(stack s){
+    return s->val;
+}
+
 /*  requires : s stack;
     assigns : nothing;
     ensures : prints s;*/
@@ -57,6 +61,7 @@ int main(){
     printf("popped %c\n", pop_stack(&s));
     printf("popped %c\n", pop_stack(&s));
     print_debug_stack(s);
+    printf("peeked top is : %c\n", peek_stack(s));
     printf("popped %c\n", pop_stack(&s));
     printf("popped %c\n", pop_stack(&s));
     printf("is_empty : %i\n", is_empty_stack(s));

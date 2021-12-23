@@ -1,10 +1,9 @@
 /*AUTOMAT READER*/
-/*NE COMPILE PAS*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h> /*include to handle error*/
 #include <string.h>
+#include "stack.h"
 
 /* since the function use integers, I used an enum type to add better readability to the code*/
 typedef enum action 
@@ -19,8 +18,7 @@ typedef enum action
         reduce_n is a char array encoding the first values of the function reduce of the automaton,
         reduce_state is an array encoding the second values of the function reduce of the automaton,
         shift_matrix is a matrix encoding the shift function of the automaton,
-        link_matrix is a matrix encoding the link function of the automaton,
-*/
+        link_matrix is a matrix encoding the link function of the automaton,*/
 void unpack(char *filename, int *n_state, char * **action_matrix, char * *reduce_n, char * *reduce_state, char * **shift_matrix, char * **link_matrix) {
     FILE *f = fopen(filename, "r");
     char buf[256];
@@ -32,8 +30,8 @@ void unpack(char *filename, int *n_state, char * **action_matrix, char * *reduce
     /*fills the action_matrix from file*/
     (*action_matrix) = malloc((*n_state)*sizeof(char *));
     for(int i; i<(*n_state); i+=1) {
-        (*action_matrix)[i] = malloc(127*sizeof(char));
-        fread((*action_matrix)[i],127,sizeof(char),f);
+        (*action_matrix)[i] = malloc(128*sizeof(char));
+        fread((*action_matrix)[i],128,sizeof(char),f);
     }
     fgets(buf,256,f); /*clear the buffer and "skip" the '\n' octal (see fgets doc ; fgets stop when reading newline)*/
 
@@ -50,7 +48,7 @@ void unpack(char *filename, int *n_state, char * **action_matrix, char * *reduce
     /*fills the shift_matrix from file*/
     (*shift_matrix) = malloc((*n_state)*sizeof(char *));
     for(int i; i<(*n_state); i+=1) {
-        (*shift_matrix)[i] = malloc(127*sizeof(char));
+        (*shift_matrix)[i] = malloc(128*sizeof(char));
     }
     fread(buf,sizeof(char),3,f);
     while (buf[0]!='\255' && buf[1]!='\255' && buf[2]!='\255'){ /* terminating instruction */ // <-- Justifier que la boucle termine !!
@@ -62,7 +60,7 @@ void unpack(char *filename, int *n_state, char * **action_matrix, char * *reduce
     /*fills the link_matrix from file*/
     (*link_matrix) = malloc((*n_state)*sizeof(char *));
     for(int i; i<(*n_state); i+=1) {
-        (*link_matrix)[i] = malloc(127*sizeof(char));
+        (*link_matrix)[i] = malloc(128*sizeof(char));
     }
     fread(buf,sizeof(char),3,f);
     while (buf[0]!='\255' && buf[1]!='\255' && buf[2]!='\255'){ /* terminating instruction */ // <-- Là aussi.
@@ -74,38 +72,37 @@ void unpack(char *filename, int *n_state, char * **action_matrix, char * *reduce
 
 /*  @requires   : valid entries;
     @assigns    : nothing;
-    @ensures    : print the different matrix and table;*/
+    @ensures    : print the different matrix and table into stream;*/
 void debug_print_tab(int n_state, char **action_matrix, char *reduce_n, char *reduce_state, char **shift_matrix, char **link_matrix, FILE *stream){
-    printf("isok");
-    fprintf(stream, "n_state :\n %i", n_state);
+    fprintf(stream, "n_state : %i\n", n_state);
     for (int i=0; i<(n_state); i+=1){
         fprintf(stream, "action_matrix[%i] :", i);
         for (int j=0; j<(127); j+=1)
-            fprintf(stream, "\\%o", action_matrix[i][j]);
+            fprintf(stream, "%i ", action_matrix[i][j]);
         fprintf(stream, "\n");
     }
 
     fprintf(stream, "reduce_n :");
     for (int i=0; i<(n_state); i+=1)
-        fprintf(stream, "\\%o", reduce_n[i]);
+        fprintf(stream, "%i ", reduce_n[i]);
     fprintf(stream, "\n");
 
     fprintf(stream, "reduce_state :");
     for (int i=0; i<(n_state); i+=1)
-        fprintf(stream, "\\%o", reduce_state[i]);
+        fprintf(stream, "\\%o  ", reduce_state[i]);
     fprintf(stream, "\n");
 
     for (int i=0; i<(n_state); i+=1){
         fprintf(stream, "shift_matrix[%i] :", i);
         for (int j=0; j<(127); j+=1)
-            fprintf(stream, "\\%o", shift_matrix[i][j]);
+            fprintf(stream, "%i ", shift_matrix[i][j]);
         fprintf(stream, "\n");
     }
 
     for (int i=0; i<(n_state); i+=1){
         fprintf(stream, "link_matrix[%i] :", i);
         for (int j=0; j<(127); j+=1)
-            fprintf(stream, "\\%o", link_matrix[i][j]);
+            fprintf(stream, "%i ", link_matrix[i][j]);
         fprintf(stream, "\n");
     }
     fflush(stream);
@@ -115,8 +112,17 @@ action action_func(char state, char letter, char **action_matrix){
     return action_matrix[(int) state][(int) letter];
 }
 
+void shift_func(char state, char letter, char **shift_matrix, stack *s){
+    char pushed_state = shift_matrix[(int) state][(int) letter];
+    push_stack(pushed_state, s);
+}
 
-int main_debug() {
+void link_func(char state, char letter, char **link_matrix, stack *s){
+    char pushed_state = link_matrix[(int) state][(int) letter];
+    push_stack(pushed_state, s);
+}
+
+int main(int argc, char **argv) {
    /*Look for valid input*/
    if (argc != 2) {
        fprintf(stderr, "%s : Error : expected 1 arguments, got %i.\n", argv[0], (argc-1));
@@ -153,12 +159,7 @@ int main_debug() {
     char *reduce_state;
     char **shift_matrix;
     char **link_matrix;
-    FILE *f2 = fopen("log", "w+"); //probablement une erreur de permission
     unpack(argv[1], &n_state, &action_matrix, &reduce_n, &reduce_state, &shift_matrix, &link_matrix);
-    debug_print_tab(n_state, action_matrix, reduce_n, reduce_state, shift_matrix, link_matrix, f2);
+    debug_print_tab(n_state, action_matrix, reduce_n, reduce_state, shift_matrix, link_matrix, stdout);
     return 0;
-}
-
-in main(int argc, char **argv){
-    
 }
