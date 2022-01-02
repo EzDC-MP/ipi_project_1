@@ -46,6 +46,7 @@ void print_debug_stack(stack s){
     printf("=======\n");
 }
 
+/* commented code, for testing purpose only*/
 /*
 int main(){
     stack s = empty_stack();
