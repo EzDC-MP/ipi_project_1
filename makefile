@@ -15,6 +15,10 @@ source.o: source.c stack.h
 
 exec: $(OBJ)
 	$(CC) $(FLAGS) -o $@ $^
+	rm $(OBJ) *gch
 
 exec_d: $(OBJ)
 	$(CC) $(FLAGS) -g -o $@ $^
+
+clean: 
+	rm -f exec stack_exec exec_d *.o *gch
