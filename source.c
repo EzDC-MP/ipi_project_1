@@ -36,6 +36,12 @@ typedef enum action
 
 void unpack(char *filename, int *n_state, char * **action_matrix, char * *reduce_n, char * *reduce_letter, char * **shift_matrix, char * **link_matrix) {
     FILE *f = fopen(filename, "r"); /*opening a filestream*/
+
+    if (f == NULL){ /*error handling with errno if file stream is incorrect*/
+        fprintf(stderr, "Error while opening file \"%s\": %s.\n", filename, strerror(errno));
+        exit(1);
+    }
+
     char buf[256];
 
     /*get the number of states*/
@@ -44,7 +50,7 @@ void unpack(char *filename, int *n_state, char * **action_matrix, char * *reduce
 
     /*fills the action_matrix from file data*/
     (*action_matrix) = malloc((*n_state)*sizeof(char *));   
-    for(int i; i<(*n_state); i+=1) {
+    for(int i=0; i<(*n_state); i+=1) {
         (*action_matrix)[i] = malloc(128*sizeof(char));
         fread((*action_matrix)[i],128,sizeof(char),f);
     }
@@ -64,20 +70,19 @@ void unpack(char *filename, int *n_state, char * **action_matrix, char * *reduce
 
     /*fills the shift_matrix from file data*/
     (*shift_matrix) = malloc((*n_state)*sizeof(char *));
-    for(int i; i<(*n_state); i+=1) {                    /*Since data for the link_matrix is parsed differently in the file,*/
-        (*shift_matrix)[i] = malloc(128*sizeof(char));  /*We first allocate all the memory, then pull right after the data from file*/
+    for(int i=0; i<(*n_state); i+=1) {                    /*Since data for the link_matrix is parsed differently in the file,*/
+        (*shift_matrix)[i] = malloc(128*sizeof(char));    /*We first allocate all the memory, then pull right after the data from file*/
     }
     fread(buf,sizeof(char),3,f);
     while (buf[0]!='\255' && buf[1]!='\255' && buf[2]!='\255'){ /* terminating instruction : if the file is correct, then there should be three bytes */
                                                                 /* '\255 \255 \255' indicating the end sequence about the shift function              */
-        //printf("allocating shift_matrix[%i][%i]\n", (int) buf[0], (int) buf[1]);
         (*shift_matrix)[(int) buf[0]][(int) buf[1]] = buf[2];
         fread(buf,sizeof(char),3,f);
     }
     
     /*fills the link_matrix from file data*/
     (*link_matrix) = malloc((*n_state)*sizeof(char *));
-    for(int i; i<(*n_state); i+=1) {                    /*Same thing as the shift_matrix*/
+    for(int i=0; i<(*n_state); i+=1) {                    /*Same thing as the shift_matrix*/
         (*link_matrix)[i] = malloc(128*sizeof(char));   
     }
     fread(buf,sizeof(char),3,f);
@@ -167,8 +172,6 @@ void raise_error(char *word, int i){
     printf("^\n");
     free(word_);
 }
-
-
 
 
 
