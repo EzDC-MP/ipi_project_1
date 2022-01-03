@@ -1,6 +1,6 @@
-## Simple automaton reader
+# Simple automaton reader
 This program allows you to read an automaton proprely described in a .aut file, and then following user input, tell if a word is or not accepted by the langage associated to the automaton.
-# How to :
+## How to :
 This program takes a filepath to a correct .aut file to run.
 for example, to run the file dyck.aut, simply run
 ```
@@ -17,5 +17,5 @@ error at :    ^
 ```
 
 To quit the program, simply break out of it (with `Ctrl-C` for example).
-# Note
+## Note
 This program does **not** check if the given `.aut` file is correct.
