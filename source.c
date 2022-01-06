@@ -11,8 +11,8 @@ int DEBUG_FLAG;
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h> /*included to handle error*/ //tjrs pas utilise mebon..
-#include <string.h>
+#include <errno.h> /*included to handle error*/
+#include <string.h>/*for errno messages (strerror)*/
 #include "stack.h"
 
 /* since the function use integers, I used an enum type to add better semantics later in the code*/
